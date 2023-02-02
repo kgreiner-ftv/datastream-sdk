@@ -13,8 +13,8 @@
             "type": "cosmosDB",
             "direction": "out",
             "name": "resultdoc",
-            "databaseName": "ds2db",
-            "collectionName": "ds2cont",
+            "databaseName": "aduvesdkdb",
+            "collectionName": "aduvesdkcontainer",
             "createIfNotExists": "true",
             "connectionStringSetting": "AzureCosmosDBConnectionString"
         }
