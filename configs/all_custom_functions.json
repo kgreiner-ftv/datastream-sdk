@@ -40,5 +40,11 @@
             "ua"
         ],
         "description": "Show User Agent details"
+    },
+    "unique_visitor_calculation_for_client_ip": {
+        "required-fields": [
+            "cliIP"
+        ],
+        "description": "Unique list of client ip"
     }
 }
