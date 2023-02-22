@@ -252,3 +252,7 @@ def parse_unique_count_for_column(column_df, column):
     """
 
     return {column: get_unique_counts_of_column(column_df)}
+
+
+def unique_visitor_calculation_for_client_ip(cliip_df):
+    return cliip_df.unique()
