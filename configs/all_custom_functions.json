@@ -41,10 +41,11 @@
         ],
         "description": "Show User Agent details"
     },
-    "unique_visitor_calculation_for_client_ip": {
-        "required-fields": [
-            "cliIP"
+    "get_unique_visitor": {
+         "required-fields": [
+             "ua",
+            "cliip"
         ],
-        "description": "Unique list of client ip"
+        "description": "Show Unique visitors based on user agent and client ip"
     }
 }
