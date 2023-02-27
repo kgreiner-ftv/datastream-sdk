@@ -24,7 +24,7 @@ import logging
 import time
 import json
 import os
-import azure.cosmos.cosmos_client as cosmos_client
+#import azure.cosmos.cosmos_client as cosmos_client
 
 from aggregation_modules.aggregator import Aggregator
 
