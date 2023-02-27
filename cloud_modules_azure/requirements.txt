@@ -1,1 +1,2 @@
 azure-storage-blob==0.37.0
+azure-cosmos
