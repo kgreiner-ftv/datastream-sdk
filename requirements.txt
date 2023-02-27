@@ -3,10 +3,20 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-httpagentparser 
-numpy 
-pandas 
-python-dateutil 
-pytz 
-six
+azure-cosmos
+httpagentparser~=1.9.5
+numpy~=1.24.2
+pandas~=1.5.3
+python-dateutil
+pytz
+six~=1.16.0
 azure-storage-blob
+pip~=22.3.1
+wheel~=0.38.4
+cryptography~=39.0.1
+tornado~=6.2
+setuptools~=65.5.1
+Django~=4.1.7
+asgiref~=3.6.0
+sqlparse~=0.4.3
+requests~=2.28.2
