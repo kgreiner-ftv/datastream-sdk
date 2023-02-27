@@ -20,11 +20,12 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
     cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
     cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
 
-    logging.info("cosmos_db_end_point", cosmos_db_end_point)
-    logging.info("cosmos_db_primary_key", cosmos_db_primary_key)
-    logging.info("cosmos_db_database_name", cosmos_db_database_name)
-    logging.info("cosmos_db_container_name", cosmos_db_container_name)
-
+    logging.info(
+        f"cosmos_db_end_point:{cosmos_db_end_point}\n"
+        f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
+        f"cosmos_db_database_name: {cosmos_db_database_name}\n"
+        f"cosmos_db_container_name: {cosmos_db_container_name}"
+    )
     container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
                               cosmos_db_container_name)
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
