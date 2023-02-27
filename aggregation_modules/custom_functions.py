@@ -263,9 +263,7 @@ def calc_unique_visitor(dfs):
     result = {}
     unique_visitors = set()
     if dfs is not None:
-        for i in range(len(dfs)):
-            user_agent = dfs.loc[i, 'ua']
-            client_ip = dfs.loc[i, 'cliip']
+        for user_agent, client_ip in dfs.itertuples(index=False):
             if (user_agent, client_ip) not in unique_visitors:
                 unique_visitors.add((user_agent, client_ip))
         result["unique_visitors"] = len(unique_visitors)
