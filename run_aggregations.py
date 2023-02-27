@@ -170,34 +170,34 @@ def main(aws_event, azure_blob, cloud=None):
 
     # publish results
 
-    config = {
-        "endpoint": "https://aduvesdkcosmos.documents.azure.com:443/",
-        "primarykey": "G4oUmN5QwMOp6J1dffFjgbUygiWijBWZehQmGHV5MgTjTigaZLZUeeY14rvpmeWsoZwYLyaiTSp1ACDb64hhQQ=="
-    }
-
-    url_connection = config["endpoint"]
-    auth = {"masterKey": config["primarykey"]}
-    # Create the cosmos client
-    client = cosmos_client.CosmosClient(url_connection, auth)
-
-    database_name = 'aduvesdkdb'
-
-    database = client.get_database_client(database_name)
-
-    CONTAINER_NAME = 'aduvesdkcontainer'
-    container = database.get_container_client(CONTAINER_NAME)
-
-    length = len(obj.result_map)
-    for i in range(length):
-        unv = int(fun_get_unique_visitors(container, CONTAINER_NAME, str(obj.result_map[i].get("start_timestamp"))))
-        if obj.result_map[i].get("unique_visitors") < unv:
-            obj.result_map[i]["unique_visitors"] = unv
-        container.upsert_item({
-            'id': str(obj.result_map[i].get("start_timestamp")),
-            'unique_visitors': str(obj.result_map[i].get("unique_visitors")),
-            'value': obj.result_map[i]
-        }
-        )
+    # config = {
+    #     "endpoint": "https://aduvesdkcosmos.documents.azure.com:443/",
+    #     "primarykey": "G4oUmN5QwMOp6J1dffFjgbUygiWijBWZehQmGHV5MgTjTigaZLZUeeY14rvpmeWsoZwYLyaiTSp1ACDb64hhQQ=="
+    # }
+    #
+    # url_connection = config["endpoint"]
+    # auth = {"masterKey": config["primarykey"]}
+    # # Create the cosmos client
+    # client = cosmos_client.CosmosClient(url_connection, auth)
+    #
+    # database_name = 'aduvesdkdb'
+    #
+    # database = client.get_database_client(database_name)
+    #
+    # CONTAINER_NAME = 'aduvesdkcontainer'
+    # container = database.get_container_client(CONTAINER_NAME)
+    #
+    # length = len(obj.result_map)
+    # for i in range(length):
+    #     unv = int(fun_get_unique_visitors(container, CONTAINER_NAME, str(obj.result_map[i].get("start_timestamp"))))
+    #     if obj.result_map[i].get("unique_visitors") < unv:
+    #         obj.result_map[i]["unique_visitors"] = unv
+    #     container.upsert_item({
+    #         'id': str(obj.result_map[i].get("start_timestamp")),
+    #         'unique_visitors': str(obj.result_map[i].get("unique_visitors")),
+    #         'value': obj.result_map[i]
+    #     }
+    #     )
 
     return obj.result_map
     # return final_result
