@@ -13,5 +13,5 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
     )
 
     result = run_aggregations.main(None, myblob, cloud="azure")
-    logging.debug(json.dumps(result, indent=2))
+    logging.info(json.dumps(result, indent=2))
     resultdoc.set(func.DocumentList(result))

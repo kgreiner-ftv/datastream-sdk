@@ -142,17 +142,18 @@ def main(aws_event, azure_blob, cloud=None):
     logger.debug("process input files...")
     obj.process_data()
 
-    length = len(obj.result_map)
+    #length = len(obj.result_map)
+    #print(obj.result_map)
 
-    final_result = {}
+    #final_result = {}
 
-    for i in range(length):
-        time_stamp = obj.result_map[i].get("start_timestamp")
-        final_result[time_stamp] = obj.result_map[i]
+    #for i in range(length):
+        #time_stamp = obj.result_map[i].get("start_timestamp")
+       # final_result[time_stamp] = obj.result_map[i]
 
     # publish results
-    #return obj.result_map
-    return final_result
+    return obj.result_map
+    #return final_result
 
 
 if __name__ == "__main__":
