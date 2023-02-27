@@ -151,14 +151,14 @@ class BaseUtils:
         return {}
 
     def read_data_file_from_local(
-        self, filename, file_format, chosen_field_names, custom_field_names
+            self, filename, file_format, chosen_field_names, custom_field_names
     ):
         return self.read_data_file(
             filename, file_format, chosen_field_names, custom_field_names
         )
 
     def read_data_file(
-        self, filename_or_buffer, file_format, chosen_field_names, custom_field_names
+            self, filename_or_buffer, file_format, chosen_field_names, custom_field_names
     ) -> pd.DataFrame:
         """
         reads the content from the provided filename or iobuffer
@@ -175,7 +175,7 @@ class BaseUtils:
             output_dataframe = pd.read_csv(
                 filename_or_buffer,
                 index_col=False,
-                header=None,
+                header=0,
                 compression="gzip",
                 names=chosen_field_names,
                 usecols=custom_field_names,
