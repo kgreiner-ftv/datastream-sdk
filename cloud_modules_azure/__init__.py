@@ -13,8 +13,6 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
         f"Blob Size: {myblob.length} bytes"
     )
 
-    result = run_aggregations.main(None, myblob, cloud="azure")
-
     cosmos_db_end_point = os.environ["COSMOS_DB_ENDPOINT"]
     cosmos_db_primary_key = os.environ["COSMOS_DB_PRIMARY_KEY"]
     cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
@@ -26,6 +24,11 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
         f"cosmos_db_database_name: {cosmos_db_database_name}\n"
         f"cosmos_db_container_name: {cosmos_db_container_name}"
     )
+
+    result = run_aggregations.main(None, myblob, cloud="azure")
+
+    logging.info(f"result:{result}")
+
     container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
                               cosmos_db_container_name)
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
