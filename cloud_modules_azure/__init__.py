@@ -6,7 +6,8 @@ import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
-def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
+#def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
+def main(myblob: func.InputStream):
     logging.info(
         f"Python blob trigger function processing blob \n"
         f"Name: {myblob.name}\n"
@@ -34,10 +35,17 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
 
     logging.info(json.dumps(result, indent=2))
-    resultdoc.set(func.DocumentList(result))
+    #resultdoc.set(func.DocumentList(result))
 
 
 def upsert_items_into_cosmos_db(container, container_name, result):
+    """
+    upsert items into cosmos db, if same time_stamp exist then update the unique visitors
+    :param container:
+    :param container_name:
+    :param result:
+    :return:
+    """
     length = len(result)
     for i in range(length):
         unv = int(fun_get_unique_visitors(container, container_name, str(result[i].get("start_timestamp"))))
@@ -68,6 +76,14 @@ def fun_get_unique_visitors(container, container_name, time_stamp):
 
 
 def db_connection(url_connection, cosmos_db_primary_key, cosmos_db_database_name, cosmos_db_container_name):
+    """
+    connect to cosmosdb
+    :param url_connection:
+    :param cosmos_db_primary_key:
+    :param cosmos_db_database_name:
+    :param cosmos_db_container_name:
+    :return:
+    """
     auth = {"masterKey": cosmos_db_primary_key}
     client = cosmos_client.CosmosClient(url_connection, auth)
     database = client.get_database_client(cosmos_db_database_name)
