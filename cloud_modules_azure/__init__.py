@@ -6,8 +6,8 @@ import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
-def main(myblob: func.InputStream, resultdoc: func.Out[func.HttpResponse]):
-    # def main(myblob: func.InputStream):
+#def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
+def main(myblob: func.InputStream):
     logging.info(
         f"Python blob trigger function processing blob \n"
         f"Name: {myblob.name}\n"
@@ -35,7 +35,6 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.HttpResponse]):
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
 
     logging.info(json.dumps(result, indent=2))
-    resultdoc.set(func.HttpResponse(200))
     #resultdoc.set(func.DocumentList(result))
 
 
