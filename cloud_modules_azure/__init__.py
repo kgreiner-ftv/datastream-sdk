@@ -48,7 +48,7 @@ def upsert_items_into_cosmos_db(container, container_name, result):
     """
     length = len(result)
     for i in range(length):
-        unv = int(fun_get_unique_visitors(container, container_name, str(result[i].get("start_timestamp"))))
+        unv = int(fun_get_unique_visitors_from_db(container, container_name, str(result[i].get("start_timestamp"))))
         if result[i].get("unique_visitors") < unv:
             result[i]["unique_visitors"] = unv
         container.upsert_item({
@@ -59,7 +59,7 @@ def upsert_items_into_cosmos_db(container, container_name, result):
         )
 
 
-def fun_get_unique_visitors(container, container_name, time_stamp):
+def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
     """
     fetch the unique_visitors for given time_stamp from cosmos db
     :param container:
