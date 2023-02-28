@@ -6,7 +6,7 @@ import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
-#def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
+# def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
 def main(myblob: func.InputStream):
     logging.info(
         f"Python blob trigger function processing blob \n"
@@ -35,7 +35,7 @@ def main(myblob: func.InputStream):
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
 
     logging.info(json.dumps(result, indent=2))
-    #resultdoc.set(func.DocumentList(result))
+    # resultdoc.set(func.DocumentList(result))
 
 
 def upsert_items_into_cosmos_db(container, container_name, result):
@@ -48,16 +48,25 @@ def upsert_items_into_cosmos_db(container, container_name, result):
     """
     length = len(result)
     for i in range(length):
-        unv = int(fun_get_unique_visitors_from_db(container, container_name, str(result[i].get("start_timestamp"))))
-        if result[i].get("unique_visitors") < unv:
-            result[i]["unique_visitors"] = unv
-        response = container.upsert_item({
+        input_unique_visitor_list = fun_get_unique_visitors_from_db(container, container_name,
+                                                                    str(result[i].get("start_timestamp")))
+
+        if input_unique_visitor_list is None:
+            input_unique_visitor_list = []
+
+        vist_list = result[i].get("unique_visitors_value")
+
+        for j in range(len(vist_list)):
+            if vist_list[j] not in input_unique_visitor_list:
+                input_unique_visitor_list.append(vist_list[j])
+
+        result[i]["unique_visitors_value"] = input_unique_visitor_list
+        container.upsert_item({
             'id': str(result[i].get("start_timestamp")),
-            'unique_visitors': str(result[i].get("unique_visitors")),
-            'value': result[i]
+            'value': result[i],
+            'unique_visitors': len(input_unique_visitor_list),
         }
         )
-    return response
 
 
 def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
@@ -68,12 +77,10 @@ def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
     :param time_stamp:
     :return:
     """
-    max_unique_visitors = 0
     for item in container.query_items(
             query='SELECT * FROM ' + container_name + ' r WHERE r.id =' + '\'' + time_stamp + '\'',
             enable_cross_partition_query=True):
-        max_unique_visitors = max(max_unique_visitors, int(item["unique_visitors"]))
-    return max_unique_visitors
+        return [tuple(x) for x in item["value"]["unique_visitors_value"]]
 
 
 def db_connection(url_connection, cosmos_db_primary_key, cosmos_db_database_name, cosmos_db_container_name):
