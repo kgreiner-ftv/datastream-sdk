@@ -6,8 +6,8 @@ import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
-# def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
-def main(myblob: func.InputStream):
+def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
+    # def main(myblob: func.InputStream):
     logging.info(
         f"Python blob trigger function processing blob \n"
         f"Name: {myblob.name}\n"
@@ -35,12 +35,24 @@ def main(myblob: func.InputStream):
     upsert_items_into_cosmos_db(container, cosmos_db_container_name, result)
 
     logging.info(json.dumps(result, indent=2))
-    # resultdoc.set(func.DocumentList(result))
+
+    result = update_result(result)
+
+    logging.info(json.dumps(result, indent=2))
+
+    resultdoc.set(func.DocumentList(result))
+
+
+def update_result(result):
+    length = len(result)
+    for i in range(length):
+        del result[i]["unique_visitors_value"]
+    return result
 
 
 def upsert_items_into_cosmos_db(container, container_name, result):
     """
-    upsert items into cosmos db, if same time_stamp exist then update the unique visitors
+    upsert items into cosmos db, if same time_stamp exist then update the unique visitors and unique_visitors_value
     :param container:
     :param container_name:
     :param result:
@@ -48,23 +60,30 @@ def upsert_items_into_cosmos_db(container, container_name, result):
     """
     length = len(result)
     for i in range(length):
-        input_unique_visitor_list = fun_get_unique_visitors_from_db(container, container_name,
-                                                                    str(result[i].get("start_timestamp")))
 
-        if input_unique_visitor_list is None:
-            input_unique_visitor_list = []
+        # fetch the unique visitors from cosmos db for the given time stamp
+        existing_unique_visitor_list = fun_get_unique_visitors_from_db(container, container_name,
+                                                                       str(result[i].get("start_timestamp")))
 
-        vist_list = result[i].get("unique_visitors_value")
+        if existing_unique_visitor_list is None:
+            existing_unique_visitor_list = []
 
-        for j in range(len(vist_list)):
-            if vist_list[j] not in input_unique_visitor_list:
-                input_unique_visitor_list.append(vist_list[j])
+        # Get the unique visitors from result
+        current_unique_visitor_list = result[i].get("unique_visitors_value")
 
-        result[i]["unique_visitors_value"] = input_unique_visitor_list
+        # traverse over current_unique_visitor_list and append to existing_unique_visitor_list if the tuple doesn't
+        # exist in existing_unique_visitor_list
+        for j in range(len(current_unique_visitor_list)):
+            if current_unique_visitor_list[j] not in existing_unique_visitor_list:
+                existing_unique_visitor_list.append(current_unique_visitor_list[j])
+
+        # update the result with updated existing_unique_visitor_list
+        result[i]["unique_visitors_value"] = existing_unique_visitor_list
+
         container.upsert_item({
             'id': str(result[i].get("start_timestamp")),
-            'value': result[i],
-            'unique_visitors': len(input_unique_visitor_list),
+            'unique_visitors_value': result[i]["unique_visitors_value"],
+            'unique_visitors': len(existing_unique_visitor_list),
         }
         )
 
@@ -80,7 +99,7 @@ def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
     for item in container.query_items(
             query='SELECT * FROM ' + container_name + ' r WHERE r.id =' + '\'' + time_stamp + '\'',
             enable_cross_partition_query=True):
-        return [tuple(x) for x in item["value"]["unique_visitors_value"]]
+        return [tuple(x) for x in item["unique_visitors_value"]]
 
 
 def db_connection(url_connection, cosmos_db_primary_key, cosmos_db_database_name, cosmos_db_container_name):
