@@ -58,6 +58,13 @@ def update_result(result):
     return result
 
 
+def calculate_delta(existing_unique_visitor_list, current_unique_visitor_list):
+    current_unique_visitor_set = set(current_unique_visitor_list)
+    existing_unique_visitor_set = set(existing_unique_visitor_list)
+    delta_set = current_unique_visitor_set - existing_unique_visitor_set
+    return list(delta_set)
+
+
 def upsert_items_into_cosmos_db(container, container_name, result):
     """
     upsert items into cosmos db, if same time_stamp exist then update the unique visitors and unique_visitors_value
@@ -81,7 +88,8 @@ def upsert_items_into_cosmos_db(container, container_name, result):
 
         # traverse over current_unique_visitor_list and append to existing_unique_visitor_list if the tuple doesn't
         # exist in existing_unique_visitor_list
-        delta_list = [t for t in current_unique_visitor_list if t not in existing_unique_visitor_list]
+        delta_list = calculate_delta(existing_unique_visitor_list, current_unique_visitor_list)
+
         if delta_list is not None and len(delta_list) > 0:
             existing_unique_visitor_list.extend(delta_list)
 
