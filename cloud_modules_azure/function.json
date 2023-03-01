@@ -8,6 +8,15 @@
             "direction": "in",
             "path": "data/{name}",
             "connection": "AzureDataStorageConnectionString"
+        },
+        {
+            "type": "cosmosDB",
+            "direction": "out",
+            "name": "HttpResponse",
+            "databaseName": "aduvesdkdb",
+            "collectionName": "aduvesdkcontainer",
+            "createIfNotExists": "true",
+            "connectionStringSetting": "AzureCosmosDBConnectionString"
         }
     ]
 }
