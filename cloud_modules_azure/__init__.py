@@ -2,6 +2,7 @@ import logging
 import run_aggregations
 import json
 import os
+import datetime
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
@@ -44,7 +45,14 @@ def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
 
 
 def update_result(result):
+    """
+    remove unique_visitors_value from list of dictionary, since we don't require this.
+    :param result:
+    :return:
+    """
     length = len(result)
+    logging.info(f"result >> length :{length}")
+
     for i in range(length):
         del result[i]["unique_visitors_value"]
     return result
@@ -82,8 +90,9 @@ def upsert_items_into_cosmos_db(container, container_name, result):
 
         container.upsert_item({
             'id': str(result[i].get("start_timestamp")),
-            'unique_visitors_value': result[i]["unique_visitors_value"],
+            'date_and_time_in_utc': datetime.datetime.fromtimestamp(result[i].get("start_timestamp")).strftime('%Y-%m-%d %H:%M:%S'),
             'unique_visitors': len(existing_unique_visitor_list),
+            'unique_visitors_value': result[i]["unique_visitors_value"]
         }
         )
 
