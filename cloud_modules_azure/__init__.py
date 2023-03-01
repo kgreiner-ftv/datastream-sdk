@@ -81,16 +81,17 @@ def upsert_items_into_cosmos_db(container, container_name, result):
 
         # traverse over current_unique_visitor_list and append to existing_unique_visitor_list if the tuple doesn't
         # exist in existing_unique_visitor_list
-        for j in range(len(current_unique_visitor_list)):
-            if current_unique_visitor_list[j] not in existing_unique_visitor_list:
-                existing_unique_visitor_list.append(current_unique_visitor_list[j])
+        delta_list = [t for t in current_unique_visitor_list if t not in existing_unique_visitor_list]
+        if delta_list is not None and len(delta_list) > 0:
+            existing_unique_visitor_list.extend(delta_list)
 
         # update the result with updated existing_unique_visitor_list
         result[i]["unique_visitors_value"] = existing_unique_visitor_list
 
         container.upsert_item({
             'id': str(result[i].get("start_timestamp")),
-            'date_and_time_in_utc': datetime.datetime.fromtimestamp(result[i].get("start_timestamp")).strftime('%Y-%m-%d %H:%M:%S'),
+            'date_and_time_in_utc': datetime.datetime.fromtimestamp(result[i].get("start_timestamp")).strftime(
+                '%Y-%m-%d %H:%M:%S'),
             'unique_visitors': len(existing_unique_visitor_list),
             'unique_visitors_value': result[i]["unique_visitors_value"]
         }
