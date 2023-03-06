@@ -28,7 +28,6 @@ import time
 import uuid
 
 import azure.cosmos.cosmos_client as cosmos_client
-
 from aggregation_modules.aggregator import Aggregator
 
 
