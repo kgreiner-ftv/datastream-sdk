@@ -28,8 +28,6 @@ import time
 import uuid
 
 import azure.cosmos.cosmos_client as cosmos_client
-from azure.cosmos import CosmosClient, PartitionKey, documents
-from pymongo import collection
 
 from aggregation_modules.aggregator import Aggregator
 
