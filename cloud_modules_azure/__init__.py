@@ -3,12 +3,12 @@ import run_aggregations
 import json
 import os
 import datetime
+import uuid
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
 def main(myblob: func.InputStream, resultdoc: func.Out[func.DocumentList]):
-    # def main(myblob: func.InputStream):
     logging.info(
         f"Python blob trigger function processing blob \n"
         f"Name: {myblob.name}\n"
@@ -58,13 +58,6 @@ def update_result(result):
     return result
 
 
-def calculate_delta(existing_unique_visitor_list, current_unique_visitor_list):
-    current_unique_visitor_set = set(current_unique_visitor_list)
-    existing_unique_visitor_set = set(existing_unique_visitor_list)
-    delta_set = current_unique_visitor_set - existing_unique_visitor_set
-    return list(delta_set)
-
-
 def upsert_items_into_cosmos_db(container, container_name, result):
     """
     upsert items into cosmos db, if same time_stamp exist then update the unique visitors and unique_visitors_value
@@ -76,37 +69,57 @@ def upsert_items_into_cosmos_db(container, container_name, result):
     length = len(result)
     for i in range(length):
 
-        # fetch the unique visitors from cosmos db for the given time stamp
-        existing_unique_visitor_list = fun_get_unique_visitors_from_db(container, container_name,
-                                                                       str(result[i].get("start_timestamp")))
+        unique_visitors_value = result[i].get("unique_visitors_value")
+        logline_date = datetime.datetime.fromtimestamp(result[i].get("start_timestamp")).date().isoformat()
 
-        if existing_unique_visitor_list is None:
-            existing_unique_visitor_list = []
+        for item in unique_visitors_value:
+            user_agent = item[0]
+            client_ip = item[1]
+            last_octet = client_ip.split('.')[-1]
+            partition_key_value = logline_date + '_' + last_octet
+            ua_cip_list_tuple = [(user_agent, client_ip)]
 
-        # Get the unique visitors from result
-        current_unique_visitor_list = result[i].get("unique_visitors_value")
+            query_as_list = query_item_from_db(container, container_name, logline_date,
+                                               last_octet, partition_key_value)
 
-        # traverse over current_unique_visitor_list and append to existing_unique_visitor_list if the tuple doesn't
-        # exist in existing_unique_visitor_list
-        delta_list = calculate_delta(existing_unique_visitor_list, current_unique_visitor_list)
-
-        if delta_list is not None and len(delta_list) > 0:
-            existing_unique_visitor_list.extend(delta_list)
-
-        # update the result with updated existing_unique_visitor_list
-        result[i]["unique_visitors_value"] = existing_unique_visitor_list
-
-        container.upsert_item({
-            'id': str(result[i].get("start_timestamp")),
-            'date_and_time_in_utc': datetime.datetime.fromtimestamp(result[i].get("start_timestamp")).strftime(
-                '%Y-%m-%d %H:%M:%S'),
-            'unique_visitors': len(existing_unique_visitor_list),
-            'unique_visitors_value': result[i]["unique_visitors_value"]
-        }
-        )
+            if len(query_as_list) == 0:
+                document_id = str(uuid.uuid4())
+                logging.info(f"document id >>  :{document_id}")
+                document = create_document(document_id, partition_key_value, logline_date, last_octet,
+                                           ua_cip_list_tuple)
+                container.create_item(body=document, partition_key=partition_key_value)
+            else:
+                unique_visitor_value_list = query_as_list[0]["unique_visitor_value"]
+                delta_list = calculate_delta(unique_visitor_value_list, ua_cip_list_tuple)
+                if delta_list is not None and len(delta_list) > 0:
+                    unique_visitor_value_list.extend(delta_list)
+                    document = create_document(query_as_list[0]["id"], query_as_list[0]["partition_key"],
+                                               logline_date, last_octet,
+                                               unique_visitor_value_list)
+                    container.upsert_item(body=document, partition_key=partition_key_value)
 
 
-def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
+def create_document(document_id, partition_key_value, logline_date, last_octet, ua_cip_list_tuple):
+    """
+
+    :param document_id:
+    :param partition_key_value:
+    :param logline_date:
+    :param last_octet:
+    :param ua_cip_list_tuple:
+    :return:
+    """
+    document = {
+        'id': document_id,
+        'partition_key': partition_key_value,
+        "date": logline_date,
+        "last_octet": last_octet,
+        "unique_visitor_value": ua_cip_list_tuple
+    }
+    return document
+
+
+def query_item_from_db(container, container_name, logline_date, last_octet, partition_key_value):
     """
     fetch the unique_visitors for given time_stamp from cosmos db
     :param container:
@@ -114,10 +127,24 @@ def fun_get_unique_visitors_from_db(container, container_name, time_stamp):
     :param time_stamp:
     :return:
     """
-    for item in container.query_items(
-            query='SELECT * FROM ' + container_name + ' r WHERE r.id =' + '\'' + time_stamp + '\'',
-            enable_cross_partition_query=True):
-        return [tuple(x) for x in item["unique_visitors_value"]]
+    date_and_octet_query = f"SELECT *  FROM {container_name} c WHERE c.date = '{logline_date}' and c.last_octet = '{last_octet}'"
+    octet_query_result = container.query_items(query=date_and_octet_query, partition_key=partition_key_value)
+    octet_query_result_as_list = list(octet_query_result)
+    return octet_query_result_as_list
+
+
+def calculate_delta(existing_unique_visitor_list, current_unique_visitor_list):
+    """
+    calculate delta from current unique visitors list
+    :param existing_unique_visitor_list:
+    :param current_unique_visitor_list:
+    :return:
+    """
+    existing_unique_visitor_list = [tuple(x) for x in existing_unique_visitor_list]
+    current_unique_visitor_set = set(current_unique_visitor_list)
+    existing_unique_visitor_set = set(existing_unique_visitor_list)
+    delta_set = current_unique_visitor_set - existing_unique_visitor_set
+    return list(delta_set)
 
 
 def db_connection(url_connection, cosmos_db_primary_key, cosmos_db_database_name, cosmos_db_container_name):
