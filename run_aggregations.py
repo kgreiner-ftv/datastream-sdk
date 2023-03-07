@@ -249,9 +249,11 @@ def create_document(document_id, partition_key_value, logline_date, last_octet, 
 def query_item_from_db(container, container_name, logline_date, last_octet, partition_key_value):
     """
     fetch the unique_visitors for given time_stamp from cosmos db
+    :param partition_key_value:
+    :param logline_date:
+    :param last_octet:
     :param container:
     :param container_name:
-    :param time_stamp:
     :return:
     """
     date_and_octet_query = f"SELECT *  FROM {container_name} c WHERE c.date = '{logline_date}' and c.last_octet = '{last_octet}'"
