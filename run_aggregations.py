@@ -246,6 +246,21 @@ def create_document(document_id, partition_key_value, logline_date, last_octet, 
     return document
 
 
+def query_item_from_db1(container, container_name, logline_date):
+    """
+    fetch the unique_visitor count  for given logline date from cosmos db
+    :param logline_date:
+    :param container:
+    :param container_name:
+    :return:
+    """
+    query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
+    logging.info(f"query:{query}")
+    octet_query_result = container.query_items(query=query, enable_cross_partition_query=True)
+    total_visitor_count = len(list(octet_query_result))
+    logging.info(f"total_visitor_count:{total_visitor_count}")
+    return total_visitor_count
+
 def query_item_from_db(container, container_name, logline_date, last_octet, partition_key_value):
     """
     fetch the unique_visitors for given time_stamp from cosmos db
