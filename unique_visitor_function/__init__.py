@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
@@ -31,8 +32,9 @@ def main(request: func.HttpRequest):
     logging.info(f'Request body : {logline_dates}')
 
     result = get_result(container, cosmos_db_container_name, logline_dates)
+    json_str = json.dumps(result)
 
-    return func.HttpResponse(body=result)
+    return func.HttpResponse(json_str, mimetype="application/json")
 
 
 def get_result(container, container_name, logline_dates):
