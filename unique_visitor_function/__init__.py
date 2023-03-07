@@ -24,21 +24,22 @@ def main(request: func.HttpRequest):
     container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
                               cosmos_db_container_name)
 
-    req_body = request.get_body().decode('utf-8')
+    #req_body = request.get_body().decode('utf-8')
 
-    logging.info(f'Request body : {req_body}')
+    logline_dates = request.get_json()["logline_date"]
 
-    result = get_result(container, cosmos_db_container_name, req_body)
+    logging.info(f'Request body : {logline_dates}')
+
+    result = get_result(container, cosmos_db_container_name, logline_dates)
 
     return func.HttpResponse(body=result)
 
 
-def get_result(container, container_name, request_body):
+def get_result(container, container_name, logline_dates):
     response = {}
-    req_body_list = request_body.split(',')
-    req_body_list = list(set(req_body_list))
-    logging.info(f'Request body list: {req_body_list}')
-    for logline_date in req_body_list:
+    logline_date_list = logline_dates.split(',')
+    logging.info(f'Request body list: {logline_date_list}')
+    for logline_date in logline_date_list:
         count = query_item_from_db(container, container_name, logline_date)
         response[logline_date] = count
 
