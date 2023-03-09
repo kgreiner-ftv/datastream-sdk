@@ -11,12 +11,19 @@ def main(request: func.HttpRequest) -> func.HttpResponse:
     )
 
     try:
-        from_date = request.get_json()["from_date"]
-        to_date = request.get_json()["to_date"]
-        logging.info(f'Request body : from_date: {from_date} and to_date :{to_date}')
+        req_body = request.get_json()
     except ValueError:
-        logging.error('Invalid request body')
-        return func.HttpResponse("Invalid request body", status_code=400)
+        return func.HttpResponse("Invalid JSON request body", status_code=400)
+
+    # Check if from_date key is present in the request body
+    from_date = req_body.get("from_date")
+    if not from_date:
+        return func.HttpResponse("Request body should contain 'from_date'", status_code=400)
+
+    # Check if to_date key is present in the request body
+    to_date = req_body.get("to_date")
+    if not to_date:
+        return func.HttpResponse("Request body should contain 'to_date'", status_code=400)
 
     date_list = []
 
@@ -62,7 +69,7 @@ def get_result(container, container_name, logline_date_list):
     response = {}
     logging.info(f'Request body list: {logline_date_list}')
 
-    for logline_date in logline_date_list:
+    for logline_date in logline_date_list.reverse():
         query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
         count = query_item_from_db(container, query)
         response[logline_date] = count
