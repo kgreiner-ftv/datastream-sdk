@@ -10,9 +10,13 @@ def main(request: func.HttpRequest) -> func.HttpResponse:
         f"Unique visitor function will get trigger on http request"
     )
 
-    from_date = request.get_json()["from_date"]
-    to_date = request.get_json()["to_date"]
-    logging.info(f'Request body : from_date: {from_date} and to_date :{to_date}')
+    try:
+        from_date = request.get_json()["from_date"]
+        to_date = request.get_json()["to_date"]
+        logging.info(f'Request body : from_date: {from_date} and to_date :{to_date}')
+    except ValueError:
+        logging.error('Invalid request body')
+        return func.HttpResponse("Invalid request body", status_code=400)
 
     date_list = []
 
