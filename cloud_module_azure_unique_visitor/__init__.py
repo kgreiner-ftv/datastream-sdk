@@ -1,6 +1,8 @@
 import logging
 import json
 import os
+
+from common_module.database_util import get_connection
 from .utils import get_date_list, db_connection, query_item_from_db
 import azure.functions as func
 
@@ -51,8 +53,10 @@ def calc_unique_visitor(date_list):
         f"cosmos_db_database_name: {cosmos_db_database_name}\n"
         f"cosmos_db_container_name: {cosmos_db_container_name}")
 
-    container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
-                              cosmos_db_container_name)
+    container = get_connection("cosmos")
+
+    # container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
+    # cosmos_db_container_name)
     return get_result(container, cosmos_db_container_name, date_list)
 
 

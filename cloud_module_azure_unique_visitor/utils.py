@@ -10,7 +10,6 @@ def query_item_from_db(container, query):
     :param container:
     :return:
     """
-    #query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
     logging.info(f"query:{query}")
     octet_query_result = container.query_items(query=query, enable_cross_partition_query=True)
     total_visitor_count = len(list(octet_query_result))
