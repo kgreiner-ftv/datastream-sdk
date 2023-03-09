@@ -1,13 +1,14 @@
 import logging
 import os
 import json
+from datetime import datetime, timedelta
 import azure.cosmos.cosmos_client as cosmos_client
 import azure.functions as func
 
 
 def main(request: func.HttpRequest):
     logging.info(
-        f"Python blob trigger function processing blob"
+        f"Unique visitor function will get trigger on http request"
     )
 
     cosmos_db_end_point = os.environ["COSMOS_DB_ENDPOINT"]
@@ -25,21 +26,54 @@ def main(request: func.HttpRequest):
     container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
                               cosmos_db_container_name)
 
-    #req_body = request.get_body().decode('utf-8')
+    from_date = request.get_json()["from_date"]
+    to_date = request.get_json()["to_date"]
 
-    logline_dates = request.get_json()["logline_date"]
+    date_list = []
 
-    logging.info(f'Request body : {logline_dates}')
+    try:
+        date_list = get_date_list(from_date, to_date)
+    except Exception as e:
+        return func.HttpResponse(str(e), status_code=400)
 
-    result = get_result(container, cosmos_db_container_name, logline_dates)
+    logging.info(f'Request body : {date_list}')
+
+    result = get_result(container, cosmos_db_container_name, date_list)
     json_str = json.dumps(result)
 
     return func.HttpResponse(json_str, mimetype="application/json")
 
 
-def get_result(container, container_name, logline_dates):
+def get_date_list(from_date, to_date):
+    """
+
+    :param from_date:
+    :param to_date:
+    :return:
+    """
+    date_format = "%Y-%m-%d"
+    if not from_date or not to_date:
+        raise ValueError("Error: from_date and to_date cannot be empty")
+
+    try:
+        start_date = datetime.strptime(from_date, date_format)
+        end_date = datetime.strptime(to_date, date_format)
+    except ValueError:
+        raise ValueError("Error: from_date or to_date has an invalid date format")
+
+    if end_date < start_date:
+        raise ValueError("Error: to_date cannot be less than from_date")
+
+    date_list = []
+    while start_date <= end_date:
+        date_list.append(start_date.strftime(date_format))
+        start_date += timedelta(days=1)
+
+    return date_list
+
+
+def get_result(container, container_name, logline_date_list):
     response = {}
-    logline_date_list = logline_dates.split(',')
     logging.info(f'Request body list: {logline_date_list}')
     for logline_date in logline_date_list:
         count = query_item_from_db(container, container_name, logline_date)
