@@ -25,8 +25,6 @@ def main(request: func.HttpRequest) -> func.HttpResponse:
     if not to_date:
         return func.HttpResponse("Request body should contain 'to_date'", status_code=400)
 
-    date_list = []
-
     try:
         date_list = get_date_list(from_date, to_date)
     except Exception as e:
@@ -67,9 +65,9 @@ def get_result(container, container_name, logline_date_list):
     :return:
     """
     response = {}
-    logging.info(f'Request body list: {logline_date_list}')
+    logging.info(f"Get unique visitor for given dates:: {logline_date_list}")
 
-    for logline_date in logline_date_list.reverse():
+    for logline_date in logline_date_list:
         query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
         count = query_item_from_db(container, query)
         response[logline_date] = count

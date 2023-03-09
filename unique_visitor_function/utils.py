@@ -62,4 +62,10 @@ def get_date_list(from_date, to_date):
         date_list.append(start_date.strftime(date_format))
         start_date += timedelta(days=1)
 
-    return date_list
+    logging.info(f"logline date list before sorting :: {date_list}")
+
+    sorted_date_list = date_list.reverse()
+
+    logging.info(f"logline date list after sorting :: {sorted_date_list}")
+
+    return sorted_date_list
