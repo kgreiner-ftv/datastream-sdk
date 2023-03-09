@@ -56,6 +56,12 @@ def get_date_list(from_date, to_date):
     if end_date < start_date:
         raise Exception("Error: to_date cannot be less than from_date")
 
+    # get today's date
+    today = datetime.date.today()
+
+    if end_date > today:
+        raise Exception("Error: to_date cannot be later than today.")
+
     date_list = []
     while start_date <= end_date:
         date_list.append(start_date.strftime(date_format))
