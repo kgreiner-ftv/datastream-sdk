@@ -26,7 +26,7 @@ def get_athena_db_connection():
     return ""
 
 
-def get_connection(database_type):
+def db_connection(database_type):
     if database_type == "cosmos":
         return get_cosmos_db_connection()
     elif database_type == "athena":

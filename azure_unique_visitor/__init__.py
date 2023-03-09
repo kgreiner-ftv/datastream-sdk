@@ -2,8 +2,8 @@ import logging
 import json
 import os
 
-from common_module.database_util import get_connection
-from .utils import get_date_list, db_connection, query_item_from_db
+from common_module.database_util import db_connection
+from .utils import get_date_list, query_item_from_db
 import azure.functions as func
 
 
@@ -42,18 +42,21 @@ def calc_unique_visitor(date_list):
     :param date_list:
     :return:
     """
-    cosmos_db_end_point = os.environ["COSMOS_DB_ENDPOINT"]
-    cosmos_db_primary_key = os.environ["COSMOS_DB_PRIMARY_KEY"]
-    cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
+    # cosmos_db_end_point = os.environ["COSMOS_DB_ENDPOINT"]
+    # cosmos_db_primary_key = os.environ["COSMOS_DB_PRIMARY_KEY"]
+    # cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
+    # cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
+    #
+    # logging.info(
+    #     f"cosmos_db_end_point:{cosmos_db_end_point}\n"
+    #     f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
+    #     f"cosmos_db_database_name: {cosmos_db_database_name}\n"
+    #     f"cosmos_db_container_name: {cosmos_db_container_name}")
+
     cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
+    logging.debug(f"cosmos_db_container_name: {cosmos_db_container_name}")
 
-    logging.info(
-        f"cosmos_db_end_point:{cosmos_db_end_point}\n"
-        f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
-        f"cosmos_db_database_name: {cosmos_db_database_name}\n"
-        f"cosmos_db_container_name: {cosmos_db_container_name}")
-
-    container = get_connection("cosmos")
+    container = db_connection("cosmos")
 
     # container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
     # cosmos_db_container_name)
