@@ -57,7 +57,7 @@ def get_date_list(from_date, to_date):
         raise Exception("Error: to_date cannot be less than from_date")
 
     # get today's date
-    today = datetime.date.today()
+    today = datetime.today().date()
 
     if end_date > today:
         raise Exception("Error: to_date cannot be later than today.")
