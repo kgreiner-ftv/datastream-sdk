@@ -64,8 +64,8 @@ def get_date_list(from_date, to_date):
 
     logging.info(f"logline date list before sorting :: {date_list}")
 
-    sorted_date_list = date_list.reverse()
+    date_list.reverse()
 
-    logging.info(f"logline date list after sorting :: {sorted_date_list}")
+    logging.info(f"logline date list after sorting :: {date_list}")
 
-    return sorted_date_list
+    return date_list
