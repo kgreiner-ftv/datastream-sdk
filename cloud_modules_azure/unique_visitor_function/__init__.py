@@ -25,6 +25,7 @@ def main(request: func.HttpRequest) -> func.HttpResponse:
     if not to_date:
         return func.HttpResponse("Request body should contain 'to_date'", status_code=400)
 
+    # calculate the list of logline dates from from_date and to_date
     try:
         date_list = get_date_list(from_date, to_date)
     except Exception as e:
@@ -45,7 +46,11 @@ def calc_unique_visitor(date_list):
     cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
     cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
 
-    logging.info(
+    if not cosmos_db_end_point or not cosmos_db_primary_key or not cosmos_db_database_name or not cosmos_db_container_name:
+        raise Exception("Error: cosmos_db_end_point and cosmos_db_primary_key and cosmos_db_database_name and  "
+                        "cosmos_db_container_name cannot be empty")
+
+    logging.debug(
         f"cosmos_db_end_point:{cosmos_db_end_point}\n"
         f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
         f"cosmos_db_database_name: {cosmos_db_database_name}\n"
