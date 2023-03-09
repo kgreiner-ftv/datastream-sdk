@@ -56,6 +56,12 @@ def get_date_list(from_date, to_date):
     if end_date < start_date:
         raise Exception("Error: to_date cannot be less than from_date")
 
+    delta = end_date - start_date
+    days_diff = delta.days
+
+    if days_diff > 90:
+        raise Exception("Error: The difference between the two dates is not more than 90 days.")
+
     # get today's date
     today = datetime.utcnow()
 
