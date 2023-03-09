@@ -21,7 +21,7 @@ def main(request: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         return func.HttpResponse(str(e), status_code=400)
 
-    result = get_result(date_list)
+    result = calc_unique_visitor(date_list)
     json_str = json.dumps(result)
     return func.HttpResponse(json_str, mimetype="application/json")
 
