@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-import azure.cosmos.cosmos_client as cosmos_client
 
 
 def query_item_from_db(container, query):
@@ -15,22 +14,6 @@ def query_item_from_db(container, query):
     total_visitor_count = len(list(octet_query_result))
     logging.info(f"total_visitor_count:{total_visitor_count}")
     return total_visitor_count
-
-
-def db_connection(url_connection, cosmos_db_primary_key, cosmos_db_database_name, cosmos_db_container_name):
-    """
-    connect to cosmosdb
-    :param url_connection:
-    :param cosmos_db_primary_key:
-    :param cosmos_db_database_name:
-    :param cosmos_db_container_name:
-    :return:
-    """
-    auth = {"masterKey": cosmos_db_primary_key}
-    client = cosmos_client.CosmosClient(url_connection, auth)
-    database = client.get_database_client(cosmos_db_database_name)
-    container = database.get_container_client(cosmos_db_container_name)
-    return container
 
 
 def get_date_list(from_date, to_date):
@@ -73,10 +56,8 @@ def get_date_list(from_date, to_date):
         date_list.append(start_date.strftime(date_format))
         start_date += timedelta(days=1)
 
-    logging.info(f"logline date list before sorting :: {date_list}")
-
     date_list.reverse()
 
-    logging.info(f"logline date list after sorting :: {date_list}")
+    logging.info(f"logline date list :: {date_list}")
 
     return date_list

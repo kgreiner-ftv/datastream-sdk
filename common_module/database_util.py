@@ -9,7 +9,7 @@ def get_cosmos_db_connection():
     cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
     cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
 
-    logging.info(
+    logging.debug(
         f"cosmos_db_end_point:{cosmos_db_end_point}\n"
         f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
         f"cosmos_db_database_name: {cosmos_db_database_name}\n"

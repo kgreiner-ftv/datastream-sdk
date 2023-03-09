@@ -42,24 +42,11 @@ def calc_unique_visitor(date_list):
     :param date_list:
     :return:
     """
-    # cosmos_db_end_point = os.environ["COSMOS_DB_ENDPOINT"]
-    # cosmos_db_primary_key = os.environ["COSMOS_DB_PRIMARY_KEY"]
-    # cosmos_db_database_name = os.environ["COSMOS_DATABASE_NAME"]
-    # cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
-    #
-    # logging.info(
-    #     f"cosmos_db_end_point:{cosmos_db_end_point}\n"
-    #     f"cosmos_db_primary_key: {cosmos_db_primary_key}\n"
-    #     f"cosmos_db_database_name: {cosmos_db_database_name}\n"
-    #     f"cosmos_db_container_name: {cosmos_db_container_name}")
-
     cosmos_db_container_name = os.environ["COSMOS_CONTAINER_NAME"]
     logging.debug(f"cosmos_db_container_name: {cosmos_db_container_name}")
 
     container = db_connection("cosmos")
 
-    # container = db_connection(cosmos_db_end_point, cosmos_db_primary_key, cosmos_db_database_name,
-    # cosmos_db_container_name)
     return get_result(container, cosmos_db_container_name, date_list)
 
 

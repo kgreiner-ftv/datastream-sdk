@@ -266,6 +266,5 @@ def calc_unique_visitor(dfs):
         for user_agent, client_ip in dfs.itertuples(index=False):
             if (user_agent, client_ip) not in unique_visitors:
                 unique_visitors.add((user_agent, client_ip))
-        #result["unique_visitors"] = len(unique_visitors)
         result["unique_visitors_value"] = list(unique_visitors)
         return result
