@@ -19,7 +19,7 @@ This document outlines the steps to configure and deploy Python Azure functions 
 
 1. Should have two container created in Azure storageAccount
 2. Should have two cosmos database containers created
-3. Set <code> aggregation-interval = 86400(seconds)</code> in the configs/provision.json
+3. Set <code> aggregation-interval = 86400(seconds)</code> in the configs/provision.json and upload into storage container
 
 ## Follow below step to setup unique visitor calculation
 
