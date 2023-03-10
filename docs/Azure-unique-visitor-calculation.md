@@ -22,4 +22,17 @@ This document outlines the steps to configure and deploy Python Azure functions 
 
 ## Follow below step to setup unique visitor calculation
 
+1. Create one cosmos database container (for example:- data_ingest) that is used for keeping all logline data that is used for calculation of unique visitor
+2. Deploy the datastream-sdk in Azure by following [Deployment using Azure Portal Reference](Azure-portal-deployment.md)
 
+
+
+# Logic
+
+1. Create a Cosmos DB container with a partition key that includes the date and the last octet of the client IP address. For example, the partition key could be a combination of the date and the last octet of the IP address, such as "20220306_123".
+2. Create an Azure function that receives the user-agent and client IP address as input parameters.
+3. Use the Azure function to retrieve the current date and the last octet of the client IP address.
+4. Use the Cosmos DB SDK to query the Cosmos DB container for documents that match the current date and the last octet of the client IP address.
+5. If a document is found, update the document with the user-agent and client IP address if they are not already present in the list of unique visitors for that day.
+6. If a document is not found, create a new document with the current date and the last octet of the client IP address as the partition key and the user-agent and client IP address as the first unique visitor for that day.
+7. Return a success message from the Azure function.
