@@ -313,8 +313,8 @@ class Aggregator:
             logger.debug(
                 "top 5 rows with aggregated time interval[aggregated_time]... \n%s",
                 self.dataframe.head(5))
-            logger.info("unique time intervals in the dataset: %s",
-                        self.dataframe["aggregated_time"].unique())
+            logger.debug("unique time intervals in the dataset: %s",
+                         self.dataframe["aggregated_time"].unique())
 
             # for each agg interval process the data
             for agg_timestamp in self.dataframe["aggregated_time"].unique():
