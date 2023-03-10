@@ -17,15 +17,13 @@ This document outlines the steps to configure and deploy Python Azure functions 
 ## Prerequisite
 <p align="left"><a href="#top">Back to Top</a></p>
 
-1. Should have two container created in Azure storageAccount first one for putting tha data and second one for putting metadata
-2. Should have cosmos database created
+1. Should have two container created in Azure storageAccount
+2. Should have two cosmos database containers created
+3. Set <code> aggregation-interval = 86400(seconds)</code> in the configs/provision.json
 
 ## Follow below step to setup unique visitor calculation
 
-1. Create one cosmos database container (for example:- data_ingest) that is used for keeping all logline data that is used for calculation of unique visitor
-2. Deploy the datastream-sdk in Azure by following [Deployment using Azure Portal Reference](Azure-portal-deployment.md)
-
-
+1. Deploy the datastream-sdk in Azure by following [Deployment using Azure Portal Reference](Azure-portal-deployment.md)
 
 # Run unique visitor
  - Navigate to **Home > Function App**
@@ -37,25 +35,28 @@ This document outlines the steps to configure and deploy Python Azure functions 
  - Select **HTTP method as POST**
  - Select **Key as master (Host Key)**
  - In the **Body** pass the request body as below:-
-    {
-      "from_date":"YYYY-MM-DD",
-      "to_date":"YYYY-MM-DD"  
-    }
-   Example:-
-   {
-     "from_date":"2023-02-21",
-     "to_date":"2023-02-22"  
-   }
+    ``` 
+       {
+         "from_date":"YYYY-MM-DD",
+         "to_date":"YYYY-MM-DD"  
+       }
+       Example:-
+       {
+         "from_date":"2023-02-21",
+         "to_date":"2023-02-22"  
+       }
+   ```
  - Expected response
-  HTTP response code
-  200 OK
-  {
-   "YYYY-MM-DD" : <<unique visitors count>>
-  }
-
-  Example:-
-  {
-  "2023-02-22": 11,
-  "2023-02-21": 6
-}
-
+  ```
+      HTTP response code
+      200 OK
+      {
+       "YYYY-MM-DD" : <<unique visitors count>>
+      }
+    
+      Example:-
+      {
+      "2023-02-22": 11,
+      "2023-02-21": 6
+      }
+  ```
