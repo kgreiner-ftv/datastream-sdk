@@ -346,6 +346,26 @@ Bind Storage account and cosmos db account in the created Azure function
             <td> <code>cosmosDBConnectionString </code> </td>
             <td> Connection String used to connect to Cosmos DB to load the data</td>
         </tr>
+        <tr align="left" valign="top">
+            <th> COSMOS_DB_ENDPOINT </th>
+            <td> <code>cosmosDBEndPoint </code> </td>
+            <td> CosmosDB end point used to connect to Cosmos DB to load the data</td>
+        </tr>
+        <tr align="left" valign="top">
+            <th> COSMOS_DB_PRIMARY_KEY </th>
+            <td> <code>cosmosDBPrimaryKey </code> </td>
+            <td> CosmosDB primaryKey used to connect to Cosmos DB to load the data</td>
+        </tr>
+        <tr align="left" valign="top">
+            <th> COSMOS_DATABASE_NAME </th>
+            <td> <code>cosmosDBName </code> </td>
+            <td> CosmosDB name used to connect to Cosmos DB to load the data</td>
+        </tr>
+        <tr align="left" valign="top">
+            <th> COSMOS_CONTAINER_NAME </th>
+            <td> <code>cosmosContainerName </code> </td>
+            <td> cosmosContainerName used to load the data into that container</td>
+        </tr>
         </tbody>
         </table>
 
