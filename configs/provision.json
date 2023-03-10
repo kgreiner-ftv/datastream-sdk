@@ -1,5 +1,5 @@
 {
-    "aggregation-interval": 300,
+    "aggregation-interval": 86400,
     "custom-functions": [
         "get_total_hits",
         "get_traffic_volume",
