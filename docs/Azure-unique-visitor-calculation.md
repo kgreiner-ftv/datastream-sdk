@@ -10,9 +10,9 @@
 This document outlines the steps to configure and deploy Python Azure functions for unique visitor calculation
 
 
-# what is unique visitor?
+## what is unique visitor?
 
-# A unique visitor calculated every day based on user agent and client IP is an estimate of the number of distinct individuals who visit a website over a period of time. It is typically calculated by analyzing the user agent and client IP address data that is recorded in the website's server logs
+## A unique visitor calculated every day based on user agent and client IP is an estimate of the number of distinct individuals who visit a website over a period of time. It is typically calculated by analyzing the user agent and client IP address data that is recorded in the website's server logs
 
 ## Prerequisite
 <p align="left"><a href="#top">Back to Top</a></p>
@@ -27,12 +27,35 @@ This document outlines the steps to configure and deploy Python Azure functions 
 
 
 
-# Logic
+# Run unique visitor
+ - Navigate to **Home > Function App**
+ - Go to **Functions**
+ - Click on **azure_unique_visitor**
+ - Click on **Code + Test**
+ - Click on **Test/Run**
+ - Click on **Input**
+ - Select **HTTP method as POST**
+ - Select **Key as master (Host Key)**
+ - In the **Body** pass the request body as below:-
+    {
+      "from_date":"YYYY-MM-DD",
+      "to_date":"YYYY-MM-DD"  
+    }
+   Example:-
+   {
+     "from_date":"2023-02-21",
+     "to_date":"2023-02-22"  
+   }
+ - Expected response
+  HTTP response code
+  200 OK
+  {
+   "YYYY-MM-DD" : <<unique visitors count>>
+  }
 
-1. Create a Cosmos DB container with a partition key that includes the date and the last octet of the client IP address. For example, the partition key could be a combination of the date and the last octet of the IP address, such as "20220306_123".
-2. Create an Azure function that receives the user-agent and client IP address as input parameters.
-3. Use the Azure function to retrieve the current date and the last octet of the client IP address.
-4. Use the Cosmos DB SDK to query the Cosmos DB container for documents that match the current date and the last octet of the client IP address.
-5. If a document is found, update the document with the user-agent and client IP address if they are not already present in the list of unique visitors for that day.
-6. If a document is not found, create a new document with the current date and the last octet of the client IP address as the partition key and the user-agent and client IP address as the first unique visitor for that day.
-7. Return a success message from the Azure function.
+  Example:-
+  {
+  "2023-02-22": 11,
+  "2023-02-21": 6
+}
+
