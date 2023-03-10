@@ -62,7 +62,11 @@ def get_result(container, container_name, logline_date_list):
     logging.info(f"Get unique visitor for given dates:: {logline_date_list}")
 
     for logline_date in logline_date_list:
-        query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
+        #query = f"SELECT DISTINCT CONCAT(val[0],',',val[1]) FROM {container_name} c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}'"
+
+        query = f"select value count(1) from {container_name} c join (SELECT DISTINCT CONCAT(val[0], ',', val[1]) " \
+                f"FROM  c JOIN val IN c.unique_visitor_value WHERE c.date = '{logline_date}')"
+
         count = query_item_from_db(container, query)
         response[logline_date] = count
 

@@ -11,9 +11,12 @@ def query_item_from_db(container, query):
     """
     logging.info(f"query:{query}")
     octet_query_result = container.query_items(query=query, enable_cross_partition_query=True)
-    total_visitor_count = len(list(octet_query_result))
-    logging.info(f"total_visitor_count:{total_visitor_count}")
-    return total_visitor_count
+    total_visitor_count = list(octet_query_result)
+    if len(total_visitor_count) > 0:
+        logging.info(f"total_visitor_count:{total_visitor_count[0]}")
+        return total_visitor_count[0]
+    else:
+        return 0
 
 
 def get_date_list(from_date, to_date):
