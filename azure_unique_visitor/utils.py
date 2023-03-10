@@ -26,9 +26,12 @@ def get_date_list(from_date, to_date):
     logging.info(f"Get list of date from {from_date} and {to_date}.")
 
     date_format = "%Y-%m-%d"
+
+    # from_date and to_date cannot be empty
     if not from_date or not to_date:
         raise Exception("Error: from_date and to_date cannot be empty")
 
+    # validate the date format
     try:
         start_date = datetime.strptime(from_date, date_format)
         end_date = datetime.strptime(to_date, date_format)
@@ -36,20 +39,29 @@ def get_date_list(from_date, to_date):
         raise Exception("Error: from_date or to_date has an invalid date format. Please enter the date in the format "
                         "of YYYY-MM-DD.")
 
+    # to_date cannot be less than from_date
     if end_date < start_date:
         raise Exception("Error: to_date cannot be less than from_date")
-
-    delta = end_date - start_date
-    days_diff = delta.days
-
-    if days_diff > 90:
-        raise Exception("Error: The difference between the two dates is not more than 90 days.")
 
     # get today's date
     today = datetime.utcnow()
 
+    # to_date cannot be later than today
     if end_date > today:
         raise Exception("Error: to_date cannot be later than today.")
+
+    delta = end_date - start_date
+    days_diff = delta.days
+
+    # The difference between the from_date and to_date should not be more than 90 days
+    if days_diff > 90:
+        raise Exception("Error: The difference between the from_date and to_date should not be more than 90 days.")
+
+    start_day_delta = today - start_date
+
+    # from_date should not more than 90 days old
+    if start_day_delta < timedelta(days=90):
+        raise Exception("Error: from_date should not more than 90 days old.")
 
     date_list = []
     while start_date <= end_date:
