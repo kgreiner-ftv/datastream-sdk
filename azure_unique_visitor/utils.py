@@ -60,7 +60,7 @@ def get_date_list(from_date, to_date):
     start_day_delta = today - start_date
 
     # from_date should not more than 90 days old
-    if start_day_delta < timedelta(days=90):
+    if start_day_delta > timedelta(days=90):
         raise Exception("Error: from_date should not more than 90 days old.")
 
     date_list = []
